@@ -6,7 +6,7 @@ let products = [
 const getProducts = (req, res) => {
   let result = [...products];
 
-  const { name, category, price } = req.query;
+  const { name, category, price, sort } = req.query;
 
   if (name) {
     result = result.filter((p) =>
@@ -20,6 +20,14 @@ const getProducts = (req, res) => {
 
   if (price) {
     result = result.filter((p) => p.price <= Number(price));
+  }
+
+  if (sort === "price_asc") {
+    result.sort((a, b) => a.price - b.price);
+  }
+
+  if (sort === "price_desc") {
+    result.sort((a, b) => b.price - a.price);
   }
 
   res.json(result);

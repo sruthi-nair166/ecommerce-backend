@@ -8,7 +8,7 @@ const register = async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const user = { email, password: hashedPassword };
+  const user = { email, password: hashedPassword, role: "admin" };
   users.push(user);
 
   res.json({ message: "User registered" });
@@ -29,7 +29,10 @@ const login = async (req, res) => {
     return res.status(404).json({ message: "Invalid password" });
   }
 
-  const token = jwt.sign({ email }, process.env.JWT_SECRET);
+  const token = jwt.sign(
+    { email: user.email, role: user.role },
+    process.env.JWT_SECRET,
+  );
 
   res.json({ token });
 };

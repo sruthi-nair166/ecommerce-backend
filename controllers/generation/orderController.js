@@ -1,5 +1,3 @@
-const { create } = require("node:domain");
-
 let orders = [];
 
 const getOrders = (req, res) => {

@@ -8,9 +8,11 @@ const {
   deleteOrder,
 } = require("../controllers/generation/orderController");
 
-router.get("/", getOrders);
-router.post("/", createOrder);
-router.put("/:id", updateOrder);
-router.delete("/:id", deleteOrder);
+const { verifyToken } = require("../middleware/authMiddleware");
+
+router.post("/", verifyToken, createOrder);
+router.get("/", verifyToken, getOrders);
+router.put("/:id", verifyToken, updateOrder);
+router.delete("/:id", verifyToken, deleteOrder);
 
 module.exports = router;
