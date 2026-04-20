@@ -1,6 +1,8 @@
 let products = [
-  { name: "Product 1", price: 100, category: "general" },
-  { name: "Product 2", price: 200, category: "general" },
+  { name: "Phone", price: 1500, category: "electronics" },
+  { name: "Laptop", price: 1200, category: "electronics" },
+  { name: "Shoes", price: 800, category: "fashion" },
+  { name: "T-Shirt", price: 500, category: "fashion" },
 ];
 
 const getProducts = (req, res) => {
