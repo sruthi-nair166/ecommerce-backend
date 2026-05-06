@@ -14,7 +14,7 @@
 
 ### Overview
 
-This project is a backend-only E-Commerce System built using Node.js and Express. It provides a set of RESTful API endpoints to manage users, products, and orders. The system supports authentication with JWT, role-based access control (RBAC), product filtering and search, and a simple analytics-based recommendation feature. Data is managed using in-memory arrays with a modular structure separating controllers, routes, and middleware.
+This project is a backend-only E-Commerce System built using Node.js and Express. It provides a set of RESTful API endpoints to manage users, products, and orders. The system supports authentication with JWT, role-based access control (RBAC), product filtering and search, and a simple analytics-based recommendation feature. Data is managed using MongoDB with Mongoose, following a modular structure with separated controllers, routes, models, and middleware for scalability and maintainability.
 
 ### Features
 
@@ -36,8 +36,8 @@ This project is a backend-only E-Commerce System built using Node.js and Express
 - **Analytics (Recommendation System)** <br />
   Simple recommendation system that filters products based on category or returns randomized suggestions to simulate intelligent product recommendations.
 
-- **In-Memory Data Storage** <br />
-  All data (users, products, orders) is stored in runtime memory using arrays, simulating backend behavior without persistent storage.
+- **MongoDB Data Storage** <br />
+  All data (users, products, orders) is stored in MongoDB using Mongoose models, enabling persistent storage and structured schema-based management.
 
 - **Middleware Support** <br />
   Includes authentication middleware for JWT verification and role-based access control.
