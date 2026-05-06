@@ -1,66 +1,81 @@
-let products = [
-  { name: "Phone", price: 1500, category: "electronics" },
-  { name: "Laptop", price: 1200, category: "electronics" },
-  { name: "Shoes", price: 800, category: "fashion" },
-  { name: "T-Shirt", price: 500, category: "fashion" },
-];
+const Product = require("../../models/product");
 
-const getProducts = (req, res) => {
-  let result = [...products];
+const getProducts = async (req, res) => {
+  try {
+    const { name, category, price, sort } = req.query;
 
-  const { name, category, price, sort } = req.query;
+    let query = {};
 
-  if (name) {
-    result = result.filter((p) =>
-      p.name.toLowerCase().includes(name.toLowerCase()),
-    );
+    if (name) {
+      query.name = { $regex: name, $options: "i" };
+    }
+
+    if (category) {
+      query.category = category;
+    }
+
+    if (price) {
+      query.price = { $lte: Number(price) };
+    }
+
+    let products = Product.find(query);
+
+    if (sort === "price_asc") {
+      products = products.sort({ price: 1 });
+    }
+
+    if (sort === "price_desc") {
+      products = products.sort({ price: -1 });
+    }
+
+    const result = await products;
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  if (category) {
-    result = result.filter((p) => p.category === category);
-  }
-
-  if (price) {
-    result = result.filter((p) => p.price <= Number(price));
-  }
-
-  if (sort === "price_asc") {
-    result.sort((a, b) => a.price - b.price);
-  }
-
-  if (sort === "price_desc") {
-    result.sort((a, b) => b.price - a.price);
-  }
-
-  res.json(result);
 };
 
-const createProduct = (req, res) => {
-  const newProduct = req.body;
-  products.push(newProduct);
-  res.json({ message: "Product added", product: newProduct });
+const createProduct = async (req, res) => {
+  try {
+    if (!req.body.name || !req.body.price) {
+      return res.status(400).json({ message: "Missing fields" });
+    }
+
+    const product = await Product.create(req.body);
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
-const updateProduct = (req, res) => {
-  const id = parseInt(req.params.id);
+const updateProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
 
-  if (!products[id]) {
-    return res.status(404).json({ message: "Not found" });
+    if (!product) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    res.json(product);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  products[id] = { ...products[id], ...req.body };
-  res.json(products[id]);
 };
 
-const deleteProduct = (req, res) => {
-  const id = parseInt(req.params.id);
+const deleteProduct = async (req, res) => {
+  try {
+    const product = await Product.findByIdAndDelete(req.params.id);
 
-  if (!products[id]) {
-    return res.status(404).json({ message: "Not found" });
+    if (!product) {
+      return res.status(404).json({ message: "Not found" });
+    }
+
+    res.json({ message: "Product deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  const deleted = products.splice(id, 1);
-  res.json(deleted);
 };
 
 module.exports = { getProducts, createProduct, updateProduct, deleteProduct };

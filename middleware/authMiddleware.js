@@ -1,11 +1,15 @@
 const jwt = require("jsonwebtoken");
 
 const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization;
+  const authHeader = req.headers.authorization;
 
-  if (!token) {
+  if (!authHeader) {
     return res.status(401).json({ message: "No token" });
   }
+
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.split(" ")[1]
+    : authHeader;
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -23,4 +27,11 @@ const isAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { verifyToken, isAdmin };
+const isUser = (req, res, next) => {
+  if (req.user.role !== "user" && req.user.role !== "admin") {
+    return res.status(403).json({ message: "User only" });
+  }
+  next();
+};
+
+module.exports = { verifyToken, isAdmin, isUser };

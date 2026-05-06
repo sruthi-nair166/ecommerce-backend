@@ -8,9 +8,16 @@ const {
   deleteUser,
 } = require("../controllers/generation/userProfile");
 
-router.get("/", getUsers);
-router.post("/", createUser);
-router.put("/:id", updateUser);
-router.delete("/:id", deleteUser);
+const {
+  verifyToken,
+  isAdmin,
+  isUser,
+} = require("../middleware/authMiddleware");
+
+router.get("/", verifyToken, isAdmin, getUsers);
+router.delete("/:id", verifyToken, isAdmin, deleteUser);
+
+router.post("/", verifyToken, isUser, createUser);
+router.put("/:id", verifyToken, isUser, updateUser);
 
 module.exports = router;

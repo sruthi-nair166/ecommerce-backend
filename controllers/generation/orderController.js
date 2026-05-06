@@ -1,42 +1,57 @@
-let orders = [];
+const Order = require("../../models/order");
 
-const getOrders = (req, res) => {
-  res.json(orders);
+const getOrders = async (req, res) => {
+  try {
+    const orders = await Order.find();
+    res.json(orders);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 };
 
-const createOrder = (req, res) => {
-  const { userId, products } = req.body;
+const createOrder = async (req, res) => {
+  try {
+    const { userId, products } = req.body;
 
-  if (!userId || !products) {
-    return res.status(400).json({ message: "Missing fields" });
+    if (!userId || !products) {
+      return res.status(400).json({ message: "Missing fields" });
+    }
+
+    const order = await Order.create({ userId, products });
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  const newOrder = { userId, products };
-  orders.push(newOrder);
-
-  res.json({ message: "Order created", order: newOrder });
 };
 
-const updateOrder = (req, res) => {
-  const id = parseInt(req.params.id);
+const updateOrder = async (req, res) => {
+  try {
+    const order = await Order.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+    });
 
-  if (!orders[id]) {
-    return res.status(404).json({ message: "Order not found" });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json(order);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  orders[id] = { ...orders[id], ...req.body };
-  res.json(orders[id]);
 };
 
-const deleteOrder = (req, res) => {
-  const id = parseInt(req.params.id);
+const deleteOrder = async (req, res) => {
+  try {
+    const order = await Order.findByIdAndDelete(req.params.id);
 
-  if (!orders[id]) {
-    return res.status(404).json({ message: "Order not found" });
+    if (!order) {
+      return res.status(404).json({ message: "Order not found" });
+    }
+
+    res.json({ message: "Order deleted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
-
-  const deleted = orders.splice(id, 1);
-  res.json(deleted);
 };
 
 module.exports = { getOrders, createOrder, updateOrder, deleteOrder };
